@@ -1,2 +1,3 @@
 # ShopExample
-GraphQL net core 5
+
+net core 5
