@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+// using Microsoft.AspNetCore.SpaServices;
 // using Microsoft.OpenApi.Models;
 // using AutoMapper;
 
@@ -15,6 +16,7 @@ using Shop.Api.Models;
 using NSwag.Generation.Processors.Security;
 using MediatR;
 using System.Reflection;
+using VueCliMiddleware;
 
 namespace Shop.Api
 {
@@ -48,6 +50,7 @@ namespace Shop.Api
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddMvc();
+            services.AddSpaStaticFiles(options => options.RootPath = "client-app/dist");
             // services.AddSwaggerDocument();
             services.AddOpenApiDocument(configure =>
             {
@@ -65,6 +68,7 @@ namespace Shop.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            _ = CommandLine.Arguments.TryGetOptions(System.Environment.GetCommandLineArgs(), false, out string mode, out ushort port, out bool https);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -80,7 +84,8 @@ namespace Shop.Api
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseOpenApi(settings => {
+            app.UseOpenApi(settings =>
+            {
                 settings.Path = "/api/specification.json";
             });
             app.UseSwaggerUi3(settings =>
@@ -100,6 +105,32 @@ namespace Shop.Api
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+            });
+            app.UseSpaStaticFiles();
+            app.UseSpa(spa =>
+            {
+                // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                // see https://go.microsoft.com/fwlink/?linkid=864501
+
+                spa.Options.SourcePath = "client-app";
+
+                if (env.IsDevelopment())
+                {
+
+                    // run npm process with client app
+                    if (mode == "start")
+                    {
+                        spa.UseVueCli(npmScript: "serve", port: port, forceKill: true, https: https);
+                    }
+
+                    // if you just prefer to proxy requests from client app, use proxy to SPA dev server instead,
+                    // app should be already running before starting a .NET client:
+                    // run npm process with client app
+                    if (mode == "attach")
+                    {
+                        spa.UseProxyToSpaDevelopmentServer($"{(https ? "https" : "http")}://localhost:{port}"); // your Vue app port
+                    }
+                }
             });
 
 
