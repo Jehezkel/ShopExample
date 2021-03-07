@@ -110,7 +110,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "client-app/src/appweb-api-client.ts"
+      "output": "client-app/src/services/appweb-api-client.ts"
     }
   }
 }
