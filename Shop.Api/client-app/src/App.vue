@@ -1,16 +1,19 @@
 <template>
-  <div class="container">
-    <ProductList />
+  <div>
+    <NavBar />
+    <div class="container">
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script>
-import ProductList from "./views/ProductList.vue";
+import NavBar from "./components/NavBar.vue";
 
 export default {
   name: "App",
   components: {
-    ProductList
+    NavBar
   }
 };
 </script>

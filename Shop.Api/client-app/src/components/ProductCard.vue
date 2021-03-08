@@ -47,6 +47,7 @@ export default {
     0.3s -webkit-transform cubic-bezier(0.155, 1.105, 0.295, 1.12);
   padding: 14px 80px 18px 36px;
   cursor: pointer;
+  width: 100%;
 }
 
 .card:hover {
@@ -61,6 +62,8 @@ div.product-card img {
   min-width: 156px;
   min-height: 130px;
   margin-bottom: 0.5rem;
+  width: 100%;
+  object-fit: cover;
 }
 div.cart-icon svg {
   /* color: black; */

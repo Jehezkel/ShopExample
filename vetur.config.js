@@ -11,12 +11,12 @@ module.exports = {
   // **optional** default: `[{ root: './' }]`
   // support monorepos
   projects: [
-    './packages/repo2', // shorthand for only root.
+    "./packages/repo2", // shorthand for only root.
     {
       // **required**
       // Where is your project?
       // It is relative to `vetur.config.js`.
-      root: './client-app'
+      root: "../Shop.Api/client-app"
     }
   ]
-}
+};

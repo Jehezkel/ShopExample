@@ -10,5 +10,8 @@ const apiClient = axios.create({
 export default {
   getProducts() {
     return apiClient.get("products");
+  },
+  postImage(data) {
+    return apiClient.post("images", data);
   }
 };
