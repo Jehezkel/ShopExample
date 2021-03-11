@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 
-namespace Shop.Api.Products.Queries
+namespace Shop.Api.Products.Queries.GetProducts
 {
     public class GetProductsQuery : IRequest<ProductListDTO>
     {

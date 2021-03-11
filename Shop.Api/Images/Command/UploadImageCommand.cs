@@ -11,11 +11,12 @@ using Shop.Api.Models;
 
 namespace Shop.Api.Images.Command
 {
-    public class UploadImageCommand : IRequest<string>
+
+    public class UploadImageCommand : IRequest<ProductImage>
     {
         public IFormFile UploadedImage { get; set; }
     }
-    public class UploadImageCommandHandler : IRequestHandler<UploadImageCommand, string>
+    public class UploadImageCommandHandler : IRequestHandler<UploadImageCommand, ProductImage>
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
@@ -24,9 +25,9 @@ namespace Shop.Api.Images.Command
             _context = context;
             _env = env;
         }
-        public async Task<string> Handle(UploadImageCommand request, CancellationToken cancellationToken)
+        public async Task<ProductImage> Handle(UploadImageCommand request, CancellationToken cancellationToken)
         {
-            string uploadPathDest = Path.Combine(this._env.WebRootPath, "images");
+            string uploadPathDest = Path.Combine(this._env.WebRootPath, "ProductImages");
             if (!Directory.Exists(uploadPathDest))
             {
                 Directory.CreateDirectory(uploadPathDest);
@@ -47,7 +48,7 @@ namespace Shop.Api.Images.Command
             };
             _context.ProductImages.Add(prodImage);
             await _context.SaveChangesAsync();
-            return tempFileName;
+            return prodImage;
         }
     }
 }

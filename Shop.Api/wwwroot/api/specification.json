@@ -34,7 +34,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ProductImage"
                 }
               }
             }
@@ -92,10 +92,179 @@
           }
         }
       }
+    },
+    "/api/Products/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "operationId": "Products_GetProductDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDetailsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "ProductImage": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "productImageId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "imageName": {
+                "type": "string",
+                "nullable": true
+              },
+              "isMainImage": {
+                "type": "boolean"
+              },
+              "productId": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "fullFilePath": {
+                "type": "string",
+                "nullable": true
+              },
+              "product": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Product": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "productId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "productName": {
+                "type": "string",
+                "nullable": true
+              },
+              "price": {
+                "type": "number",
+                "format": "decimal"
+              },
+              "productDescription": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ProductDescription"
+                  }
+                ]
+              },
+              "productImages": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/ProductImage"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ProductDescription": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "productId": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "product": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "BaseEntity": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "isDeleted": {
+            "type": "boolean"
+          }
+        }
+      },
       "ProductListDTO": {
         "type": "object",
         "additionalProperties": false,
@@ -143,6 +312,10 @@
             "type": "number",
             "format": "decimal"
           },
+          "productDescription": {
+            "type": "string",
+            "nullable": true
+          },
           "images": {
             "type": "array",
             "nullable": true,
@@ -160,12 +333,37 @@
             "type": "integer",
             "format": "int32"
           },
-          "imageName": {
+          "isMainImage": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProductDetailsDTO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "productName": {
             "type": "string",
             "nullable": true
           },
-          "isMainImage": {
-            "type": "boolean"
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "productImages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ProductImage"
+            }
+          },
+          "productDescription": {
+            "type": "string",
+            "nullable": true
           }
         }
       }

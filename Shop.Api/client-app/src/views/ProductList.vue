@@ -25,7 +25,6 @@ export default {
   mounted() {
     ProductServices.getProducts().then(response => {
       this.productList = response.data;
-      console.log(this.productList.products);
     });
   }
 };

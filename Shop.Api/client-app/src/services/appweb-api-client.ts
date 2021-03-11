@@ -8,7 +8,7 @@
 // ReSharper disable InconsistentNaming
 
 export interface IImagesClient {
-    upload(uploadedImage: FileParameter | null | undefined): Promise<string>;
+    upload(uploadedImage: FileParameter | null | undefined): Promise<ProductImage>;
 }
 
 export class ImagesClient implements IImagesClient {
@@ -21,7 +21,7 @@ export class ImagesClient implements IImagesClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    upload(uploadedImage: FileParameter | null | undefined): Promise<string> {
+    upload(uploadedImage: FileParameter | null | undefined): Promise<ProductImage> {
         let url_ = this.baseUrl + "/api/Images";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -42,14 +42,14 @@ export class ImagesClient implements IImagesClient {
         });
     }
 
-    protected processUpload(response: Response): Promise<string> {
+    protected processUpload(response: Response): Promise<ProductImage> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            result200 = ProductImage.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -57,13 +57,14 @@ export class ImagesClient implements IImagesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string>(<any>null);
+        return Promise.resolve<ProductImage>(<any>null);
     }
 }
 
 export interface IProductsClient {
     getProducts(): Promise<ProductListDTO>;
     create(command: CreateProductCommand): Promise<number>;
+    getProductDetail(id: number): Promise<ProductDetailsDTO>;
 }
 
 export class ProductsClient implements IProductsClient {
@@ -147,6 +148,244 @@ export class ProductsClient implements IProductsClient {
         }
         return Promise.resolve<number>(<any>null);
     }
+
+    getProductDetail(id: number): Promise<ProductDetailsDTO> {
+        let url_ = this.baseUrl + "/api/Products/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetProductDetail(_response);
+        });
+    }
+
+    protected processGetProductDetail(response: Response): Promise<ProductDetailsDTO> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ProductDetailsDTO.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ProductDetailsDTO>(<any>null);
+    }
+}
+
+export abstract class BaseEntity implements IBaseEntity {
+    createdDate?: Date;
+    modifiedDate?: Date | undefined;
+    modifiedBy?: string | undefined;
+    createdBy?: string | undefined;
+    isDeleted?: boolean;
+
+    constructor(data?: IBaseEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+            this.modifiedDate = _data["modifiedDate"] ? new Date(_data["modifiedDate"].toString()) : <any>undefined;
+            this.modifiedBy = _data["modifiedBy"];
+            this.createdBy = _data["createdBy"];
+            this.isDeleted = _data["isDeleted"];
+        }
+    }
+
+    static fromJS(data: any): BaseEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
+        data["modifiedDate"] = this.modifiedDate ? this.modifiedDate.toISOString() : <any>undefined;
+        data["modifiedBy"] = this.modifiedBy;
+        data["createdBy"] = this.createdBy;
+        data["isDeleted"] = this.isDeleted;
+        return data; 
+    }
+}
+
+export interface IBaseEntity {
+    createdDate?: Date;
+    modifiedDate?: Date | undefined;
+    modifiedBy?: string | undefined;
+    createdBy?: string | undefined;
+    isDeleted?: boolean;
+}
+
+export class ProductImage extends BaseEntity implements IProductImage {
+    productImageId?: number;
+    imageName?: string | undefined;
+    isMainImage?: boolean;
+    productId?: number | undefined;
+    fullFilePath?: string | undefined;
+    product?: Product | undefined;
+
+    constructor(data?: IProductImage) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.productImageId = _data["productImageId"];
+            this.imageName = _data["imageName"];
+            this.isMainImage = _data["isMainImage"];
+            this.productId = _data["productId"];
+            this.fullFilePath = _data["fullFilePath"];
+            this.product = _data["product"] ? Product.fromJS(_data["product"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ProductImage {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductImage();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productImageId"] = this.productImageId;
+        data["imageName"] = this.imageName;
+        data["isMainImage"] = this.isMainImage;
+        data["productId"] = this.productId;
+        data["fullFilePath"] = this.fullFilePath;
+        data["product"] = this.product ? this.product.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IProductImage extends IBaseEntity {
+    productImageId?: number;
+    imageName?: string | undefined;
+    isMainImage?: boolean;
+    productId?: number | undefined;
+    fullFilePath?: string | undefined;
+    product?: Product | undefined;
+}
+
+export class Product extends BaseEntity implements IProduct {
+    productId?: number;
+    productName?: string | undefined;
+    price?: number;
+    productDescription?: ProductDescription | undefined;
+    productImages?: ProductImage[] | undefined;
+
+    constructor(data?: IProduct) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.productId = _data["productId"];
+            this.productName = _data["productName"];
+            this.price = _data["price"];
+            this.productDescription = _data["productDescription"] ? ProductDescription.fromJS(_data["productDescription"]) : <any>undefined;
+            if (Array.isArray(_data["productImages"])) {
+                this.productImages = [] as any;
+                for (let item of _data["productImages"])
+                    this.productImages!.push(ProductImage.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): Product {
+        data = typeof data === 'object' ? data : {};
+        let result = new Product();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productId"] = this.productId;
+        data["productName"] = this.productName;
+        data["price"] = this.price;
+        data["productDescription"] = this.productDescription ? this.productDescription.toJSON() : <any>undefined;
+        if (Array.isArray(this.productImages)) {
+            data["productImages"] = [];
+            for (let item of this.productImages)
+                data["productImages"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IProduct extends IBaseEntity {
+    productId?: number;
+    productName?: string | undefined;
+    price?: number;
+    productDescription?: ProductDescription | undefined;
+    productImages?: ProductImage[] | undefined;
+}
+
+export class ProductDescription extends BaseEntity implements IProductDescription {
+    productId?: number;
+    description?: string | undefined;
+    product?: Product | undefined;
+
+    constructor(data?: IProductDescription) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.productId = _data["productId"];
+            this.description = _data["description"];
+            this.product = _data["product"] ? Product.fromJS(_data["product"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ProductDescription {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductDescription();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productId"] = this.productId;
+        data["description"] = this.description;
+        data["product"] = this.product ? this.product.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IProductDescription extends IBaseEntity {
+    productId?: number;
+    description?: string | undefined;
+    product?: Product | undefined;
 }
 
 export class ProductListDTO implements IProductListDTO {
@@ -244,6 +483,7 @@ export interface IProductDTO {
 export class CreateProductCommand implements ICreateProductCommand {
     productName?: string | undefined;
     price?: number;
+    productDescription?: string | undefined;
     images?: AddedImageDTO[] | undefined;
 
     constructor(data?: ICreateProductCommand) {
@@ -259,6 +499,7 @@ export class CreateProductCommand implements ICreateProductCommand {
         if (_data) {
             this.productName = _data["productName"];
             this.price = _data["price"];
+            this.productDescription = _data["productDescription"];
             if (Array.isArray(_data["images"])) {
                 this.images = [] as any;
                 for (let item of _data["images"])
@@ -278,6 +519,7 @@ export class CreateProductCommand implements ICreateProductCommand {
         data = typeof data === 'object' ? data : {};
         data["productName"] = this.productName;
         data["price"] = this.price;
+        data["productDescription"] = this.productDescription;
         if (Array.isArray(this.images)) {
             data["images"] = [];
             for (let item of this.images)
@@ -290,12 +532,12 @@ export class CreateProductCommand implements ICreateProductCommand {
 export interface ICreateProductCommand {
     productName?: string | undefined;
     price?: number;
+    productDescription?: string | undefined;
     images?: AddedImageDTO[] | undefined;
 }
 
 export class AddedImageDTO implements IAddedImageDTO {
     productImageId?: number;
-    imageName?: string | undefined;
     isMainImage?: boolean;
 
     constructor(data?: IAddedImageDTO) {
@@ -310,7 +552,6 @@ export class AddedImageDTO implements IAddedImageDTO {
     init(_data?: any) {
         if (_data) {
             this.productImageId = _data["productImageId"];
-            this.imageName = _data["imageName"];
             this.isMainImage = _data["isMainImage"];
         }
     }
@@ -325,7 +566,6 @@ export class AddedImageDTO implements IAddedImageDTO {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["productImageId"] = this.productImageId;
-        data["imageName"] = this.imageName;
         data["isMainImage"] = this.isMainImage;
         return data; 
     }
@@ -333,8 +573,67 @@ export class AddedImageDTO implements IAddedImageDTO {
 
 export interface IAddedImageDTO {
     productImageId?: number;
-    imageName?: string | undefined;
     isMainImage?: boolean;
+}
+
+export class ProductDetailsDTO implements IProductDetailsDTO {
+    productId?: number;
+    productName?: string | undefined;
+    price?: number;
+    productImages?: ProductImage[] | undefined;
+    productDescription?: string | undefined;
+
+    constructor(data?: IProductDetailsDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.productId = _data["productId"];
+            this.productName = _data["productName"];
+            this.price = _data["price"];
+            if (Array.isArray(_data["productImages"])) {
+                this.productImages = [] as any;
+                for (let item of _data["productImages"])
+                    this.productImages!.push(ProductImage.fromJS(item));
+            }
+            this.productDescription = _data["productDescription"];
+        }
+    }
+
+    static fromJS(data: any): ProductDetailsDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductDetailsDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productId"] = this.productId;
+        data["productName"] = this.productName;
+        data["price"] = this.price;
+        if (Array.isArray(this.productImages)) {
+            data["productImages"] = [];
+            for (let item of this.productImages)
+                data["productImages"].push(item.toJSON());
+        }
+        data["productDescription"] = this.productDescription;
+        return data; 
+    }
+}
+
+export interface IProductDetailsDTO {
+    productId?: number;
+    productName?: string | undefined;
+    price?: number;
+    productImages?: ProductImage[] | undefined;
+    productDescription?: string | undefined;
 }
 
 export interface FileParameter {

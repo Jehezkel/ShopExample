@@ -84,14 +84,10 @@ namespace Shop.Api
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseOpenApi(settings =>
-            {
-                settings.Path = "/api/specification.json";
-            });
+            app.UseOpenApi();
             app.UseSwaggerUi3(settings =>
                 {
                     settings.Path = "/api";
-                    settings.DocumentPath = "/api/specification.json";
                 });
 
             app.UseRouting();

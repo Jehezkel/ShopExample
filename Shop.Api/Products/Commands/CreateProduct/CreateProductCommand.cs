@@ -7,18 +7,18 @@ using Shop.Api.DAL;
 using Shop.Api.Models;
 using System.Threading.Tasks;
 
-namespace Shop.Api.Products.Commands
+namespace Shop.Api.Products.Commands.CreateProduct
 {
     public class AddedImageDTO
     {
         public int ProductImageId { get; set; }
-        public string ImageName { get; set; }
         public bool IsMainImage { get; set; }
     }
     public class CreateProductCommand : IRequest<int>
     {
         public string ProductName { get; set; }
         public decimal Price { get; set; }
+        public string ProductDescription { get; set; }
         public List<AddedImageDTO> Images { get; set; }
     }
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, int>
@@ -41,6 +41,10 @@ namespace Shop.Api.Products.Commands
                 currImage.IsMainImage = i.IsMainImage;
                 product.ProductImages.Add(currImage);
             });
+            product.ProductDescription = new ProductDescription
+            {
+                Description = request.ProductDescription
+            };
             _context.Add(product);
             await _context.SaveChangesAsync(cancellationToken);
             return product.ProductId;

@@ -3,7 +3,7 @@
     <div class="card p-3 product-card">
       <img
         class="card-image-top"
-        src="https://1.allegroimg.com/s180/067cf4/c8e800d54206a489b9f091ad5351/AQUAEL-Zestaw-Akwarystyczny-AKWARIUM-54L-Pokrywa"
+        :src="product.productImage"
         alt=""
         srcset=""
       />
@@ -19,7 +19,7 @@
           </div>
 
           <div class="ml-auto cart-icon">
-            <a href="#" class="btn-cart-icon">
+            <a router class="btn-cart-icon">
               <span><font-awesome-icon icon="cart-plus"/></span
             ></a>
           </div>
@@ -51,13 +51,9 @@ export default {
 }
 
 .card:hover {
-  /* transform: scale(1.05); */
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
 }
-/* a.cart-icon {
-  width: 3.8rem;
-  height: 3.8rem;
-} */
+
 div.product-card img {
   min-width: 156px;
   min-height: 130px;
@@ -66,7 +62,6 @@ div.product-card img {
   object-fit: cover;
 }
 div.cart-icon svg {
-  /* color: black; */
   text-align: center;
   vertical-align: middle;
   position: relative;

@@ -4,7 +4,7 @@ using AutoMapper;
 using Shop.Api.Mappings;
 using Shop.Api.Models;
 
-namespace Shop.Api.Products.Queries
+namespace Shop.Api.Products.Queries.GetProducts
 {
     public class ProductDTO : IMapFrom<Product>
     {
@@ -14,7 +14,7 @@ namespace Shop.Api.Products.Queries
         public string ProductImage { get; set; }
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<Product, ProductDTO>().ForMember(d => d.ProductImage, opt => opt.MapFrom(s => s.ProductImages.FirstOrDefault().ImageName));
+            profile.CreateMap<Product, ProductDTO>().ForMember(d => d.ProductImage, opt => opt.MapFrom(s => s.ProductImages.FirstOrDefault().fullFilePath));
         }
     }
     public class ProductListDTO
