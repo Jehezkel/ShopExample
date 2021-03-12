@@ -39,7 +39,7 @@ namespace Shop.Api
             // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
             // services.AddPooledDbContextFactory<AppDbContext>(opt => opt.UseNpgsql(_configuration.GetConnectionString("ShopApi")));
-            services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(_configuration.GetConnectionString("ShopApi")));
+            services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(_configuration.GetConnectionString("ShopApi")), ServiceLifetime.Transient);
             services.AddDatabaseDeveloperPageExceptionFilter();
             // services.AddDefaultIdentity<AppUser>(opt => opt.SignIn.RequireConfirmedAccount = true)
             //     .AddEntityFrameworkStores<AppDbContext>();

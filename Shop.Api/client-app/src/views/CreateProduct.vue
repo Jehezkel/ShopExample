@@ -52,7 +52,14 @@
             animated
           ></b-progress>
         </div>
-
+        <div class="editor-container">
+          <quill-editor
+            ref="myTextEditor"
+            v-model="product.productDescription"
+            :config="editorOption"
+          >
+          </quill-editor>
+        </div>
         <b-button type="submit" variant="primary" class="mt-3">Submit</b-button>
       </b-form-group>
     </b-form>
@@ -72,10 +79,17 @@ class addedImageDto {
     this.IsMainImage = isMain;
   }
 }
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 import ProductServices from "../services/ProductServices";
+import { quillEditor } from "vue-quill-editor";
 // import { Drag, DropList } from "vue-easy-dnd";
 import Vue from "vue";
 export default {
+  components: {
+    quillEditor
+  },
   data() {
     return {
       product: {
@@ -89,7 +103,8 @@ export default {
         blankColor: "#A9A9A9",
         height: 130,
         width: 156
-      }
+      },
+      editorOption: {}
     };
   },
   computed: {
@@ -99,7 +114,6 @@ export default {
           img => img.showProgress === false
         );
         if (firstImg === undefined || firstImg.fullFilePath === undefined) {
-          console.log("tutaj");
           return "";
         } else {
           return this.uploadedImages.find(img => img.showProgress === false)

@@ -41,6 +41,7 @@ export default {
     return apiClient.post("products", data);
   },
   getProductDetail(productId) {
+    console.log(productId);
     return apiClient.get("products/" + productId);
   }
 };

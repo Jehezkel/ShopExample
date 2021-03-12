@@ -1,31 +1,38 @@
 <template>
   <div class="col mb-4 mr-4 p-0">
-    <div class="card p-3 product-card">
-      <img
-        class="card-image-top"
-        :src="product.productImage"
-        alt=""
-        srcset=""
-      />
+    <router-link
+      v-bind:to="{
+        name: 'ProductDetails',
+        params: { productId: product.productId }
+      }"
+    >
+      <div class="card p-3 product-card">
+        <img
+          class="card-image-top"
+          :src="product.productImage"
+          alt=""
+          srcset=""
+        />
 
-      <div class="product-info">
-        <div class="product-info-text text-left">
-          <h6 class="card-title">{{ product.productName }}</h6>
-          <p class="cardtext">60 litrow</p>
-        </div>
-        <div class="card-price-row d-flex justify-between">
-          <div class="product-price">
-            <p class="cardtext">{{ product.price }}zł</p>
+        <div class="product-info">
+          <div class="product-info-text text-left">
+            <h6 class="card-title">{{ product.productName }}</h6>
+            <p class="cardtext">60 litrow</p>
           </div>
+          <div class="card-price-row d-flex justify-between">
+            <div class="product-price">
+              <p class="cardtext">{{ product.price }}zł</p>
+            </div>
 
-          <div class="ml-auto cart-icon">
-            <a router class="btn-cart-icon">
-              <span><font-awesome-icon icon="cart-plus"/></span
-            ></a>
+            <div class="ml-auto cart-icon">
+              <a router class="btn-cart-icon">
+                <span><font-awesome-icon icon="cart-plus"/></span
+              ></a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </router-link>
   </div>
 </template>
 

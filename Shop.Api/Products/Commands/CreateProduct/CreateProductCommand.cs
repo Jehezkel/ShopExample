@@ -35,12 +35,12 @@ namespace Shop.Api.Products.Commands.CreateProduct
                 ProductName = request.ProductName,
                 Price = request.Price
             };
-            request.Images.ForEach(async i =>
-            {
-                var currImage = await _context.ProductImages.FindAsync(i.ProductImageId);
-                currImage.IsMainImage = i.IsMainImage;
-                product.ProductImages.Add(currImage);
-            });
+            request.Images.ForEach(i =>
+           {
+               var currImage = _context.ProductImages.Find(i.ProductImageId);
+               currImage.IsMainImage = i.IsMainImage;
+               product.ProductImages.Add(currImage);
+           });
             product.ProductDescription = new ProductDescription
             {
                 Description = request.ProductDescription

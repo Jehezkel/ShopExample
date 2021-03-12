@@ -16,7 +16,7 @@ module.exports = {
       // **required**
       // Where is your project?
       // It is relative to `vetur.config.js`.
-      root: "../Shop.Api/client-app"
+      root: "./Shop.Api/client-app/"
     }
   ]
 };
