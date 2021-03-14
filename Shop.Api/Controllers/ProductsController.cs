@@ -3,12 +3,15 @@ using System.Threading.Tasks;
 using Shop.Api.Products.Queries.GetProducts;
 using Shop.Api.Products.Commands.CreateProduct;
 using Shop.Api.Products.Queries.GetProductDetails;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shop.Api.Controllers
 {
+    [Authorize]
     public class ProductsController : ApiControllerBase
     {
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<ProductListDTO>> GetProducts()
         {
             return await Mediator.Send(new GetProductsQuery());

@@ -11,6 +11,7 @@
     <b-navbar-nav>
       <b-nav-item to="/">ProductList</b-nav-item>
       <b-nav-item to="/Product/new">Creat Product</b-nav-item>
+      <b-nav-item to="/Login">Login</b-nav-item>
     </b-navbar-nav>
   </b-navbar>
 </template>

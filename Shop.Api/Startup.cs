@@ -40,6 +40,9 @@ namespace Shop.Api
             // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
             // services.AddPooledDbContextFactory<AppDbContext>(opt => opt.UseNpgsql(_configuration.GetConnectionString("ShopApi")));
             services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(_configuration.GetConnectionString("ShopApi")), ServiceLifetime.Transient);
+            services.AddDefaultIdentity<AppUser>(options =>
+                        options.SignIn.RequireConfirmedAccount = true)
+          .AddEntityFrameworkStores<AppDbContext>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             // services.AddDefaultIdentity<AppUser>(opt => opt.SignIn.RequireConfirmedAccount = true)
             //     .AddEntityFrameworkStores<AppDbContext>();
@@ -64,6 +67,13 @@ namespace Shop.Api
                 // });
                 // configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             });
+            services.AddAuthentication()
+                .AddGoogle(opt =>
+                {
+                    IConfigurationSection googleAuthNSection = _configuration.GetSection("Authentication:Google");
+                    opt.ClientId = googleAuthNSection["ClientId"];
+                    opt.ClientSecret = googleAuthNSection["ClientSecret"];
+                });
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -92,9 +102,9 @@ namespace Shop.Api
 
             app.UseRouting();
 
-            // app.UseAuthentication();
+            app.UseAuthentication();
             // app.UseIdentityServer();
-            // app.UseAuthorization();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
